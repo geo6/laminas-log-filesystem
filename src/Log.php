@@ -1,11 +1,20 @@
 <?php
-use Zend\Authentication\AuthenticationService;
-
 namespace Geo6;
+
+use ErrorException;
+use Zend\Authentication\AuthenticationService;
+use Zend\Log\Logger;
+use Zend\Log\Processor\PsrPlaceholder;
+use Zend\Log\Writer\Stream;
 
 class Log {
   public static function write($fname, $text, $data = array(), $level = NULL) {
-    if (is_null($level)) $level = Zend\Log\Logger::INFO;
+    $directory = realpath(dirname($fname));
+    if (!file_exists($directory) || !is_dir($directory) || !is_writable($directory)) {
+      throw new ErrorException(sprintf('The directory "%s" is not a vaild directory to write log files.', $directory));
+    }
+
+    if (is_null($level)) $level = Logger::INFO;
 
     // ---------------------------------------------------------------------------------------------
     if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -18,7 +27,7 @@ class Log {
     $data['_referer'] = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : NULL);
 
     // ---------------------------------------------------------------------------------------------
-    if (isset($_SERVER['HTTP_USER_AGENT'])) {
+    if (!empty(ini_get('browscap')) && isset($_SERVER['HTTP_USER_AGENT'])) {
       $gb = get_browser();
       $data['_browser'] = ($gb->browser != 'Default Browser' ? $gb->platform.' '.$gb->parent : NULL);
     } else {
@@ -32,17 +41,22 @@ class Log {
     $data['_login'] = NULL; if (isset($_SESSION['uid']) && !empty($_SESSION['uid'])) $data['_login'] = $login;
 
     // ---------------------------------------------------------------------------------------------
-    $logger = new Zend\Log\Logger;
-    $logger->addWriter(new Zend\Log\Writer\Stream(SITE_PATH.'/logs/'.$fname.'.log'));
-    $logger->addProcessor(new Zend\Log\Processor\PsrPlaceholder);
+    $logger = new Logger;
+    $logger->addWriter(new Stream($fname));
+    $logger->addProcessor(new PsrPlaceholder);
 
     $logger->log($level, $text, $data);
   }
 
   public static function read($fname) {
+    $directory = realpath(dirname($fname));
+    if (!file_exists($directory) || !is_dir($directory) || !is_readable($directory)) {
+      throw new ErrorException(sprintf('The directory "%s" is not a vaild directory to read log files.', $directory));
+    }
+
     $logs = array();
 
-    $fp = fopen(SITE_PATH.'/logs/'.$fname.'.log', 'r');
+    $fp = fopen($fname, 'r');
     if ($fp) {
       while (($r = fgets($fp, 10240)) !== FALSE) {
         // Zend\Log : %timestamp% %priorityName% (%priority%): %message% %extra%
