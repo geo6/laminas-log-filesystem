@@ -1,6 +1,6 @@
 <?php
 
-namespace Geo6;
+namespace Geo6\Zend\Log;
 
 use ErrorException;
 use Zend\Authentication\AuthenticationService;
