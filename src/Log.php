@@ -11,75 +11,114 @@ use Zend\Log\Writer\Stream;
 
 class Log
 {
-    public static function write($fname, $text, $data = [], $level = null)
-    {
-        $directory = realpath(dirname($fname));
-        if (!file_exists($directory) || !is_dir($directory) || !is_writable($directory)) {
-            throw new ErrorException(sprintf('The directory "%s" is not a vaild directory to write log files.', $directory));
-        }
+    /**
+     * Write PSR-3 log in a file (on disk).
+     *
+     * @param string $path     Path where to store the log file.
+     * @param string $message  Message (can contain placeholders).
+     * @param array  $extra    Extra data (will be used to fill placeholders).
+     * @param int    $priority Priority.
+     *
+     * @throws ErrorException if the directory doesn't exist or is not writable.
+     *
+     * @return void
+     */
+    public static function write(
+        string $path,
+        string $message,
+        array $extra = [],
+        int $priority = Logger::INFO
+    ): void {
+        $directory = realpath(dirname($path));
 
-        if (is_null($level)) {
-            $level = Logger::INFO;
+        if (!file_exists($directory) || !is_dir($directory) || !is_writable($directory)) {
+            throw new ErrorException(
+                sprintf(
+                    'The directory "%s" is not a vaild directory to write log files.',
+                    $directory
+                )
+            );
         }
 
         // ---------------------------------------------------------------------------------------------
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $data['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'] . (isset($_SERVER['REMOTE_ADDR']) ? ' (' . $_SERVER['REMOTE_ADDR'] . ')' : '');
-        } else {
-            $data['_ip'] = (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null);
+            $extra['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+
+            if (isset($_SERVER['REMOTE_ADDR'])) {
+                $extra['_ip'] .= ' (' . $_SERVER['REMOTE_ADDR'] . ')';
+            }
+        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
+            $extra['_ip'] = $_SERVER['REMOTE_ADDR'];
         }
 
         // ---------------------------------------------------------------------------------------------
-        $data['_referer'] = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
+        if (isset($_SERVER['HTTP_REFERER'])) {
+            $extra['_referer'] = $_SERVER['HTTP_REFERER'];
+        }
 
         // ---------------------------------------------------------------------------------------------
         $agent = new Agent();
 
         if ($agent->isRobot()) {
-            $data['_robot'] = $agent->robot();
+            $extra['_robot'] = $agent->robot();
         } else {
             if ($agent->isPhone()) {
-                $data['_device'] = $agent->device() ?? 'phone';
+                $extra['_device'] = $agent->device() ?? 'phone';
             } elseif ($agent->isTablet()) {
-                $data['_device'] = $agent->device() ?? 'tablet';
+                $extra['_device'] = $agent->device() ?? 'tablet';
             } elseif ($agent->isDesktop()) {
-                $data['_device'] = 'desktop';
+                $extra['_device'] = 'desktop';
             }
 
-            $data['_platform'] = $agent->platform() . ' ' . $agent->version($agent->platform());
-            $data['_browser'] = $agent->browser() . ' ' . $agent->version($agent->browser());
+            $extra['_platform'] = $agent->platform() . ' ' . $agent->version($agent->platform());
+            $extra['_browser'] = $agent->browser() . ' ' . $agent->version($agent->browser());
         }
 
         // ---------------------------------------------------------------------------------------------
         $auth = new AuthenticationService();
         $login = $auth->getIdentity();
 
-        $data['_login'] = null;
+        $extra['_login'] = null;
         if (isset($_SESSION['uid']) && !empty($_SESSION['uid'])) {
-            $data['_login'] = $login;
+            $extra['_login'] = $login;
         }
 
         // ---------------------------------------------------------------------------------------------
         $logger = new Logger();
-        $logger->addWriter(new Stream($fname));
+        $logger->addWriter(new Stream($path));
         $logger->addProcessor(new PsrPlaceholder());
 
-        $logger->log($level, $text, $data);
+        $logger->log($priority, $message, $extra);
     }
 
-    public static function read($fname)
+    /**
+     * Read PSR-3 log from file (on disk).
+     *
+     * @param string $path Path of the log file to read.
+     *
+     * @throws ErrorException if the directory doesn't exist or is not readable.
+     * @throws ErrorException if the log format is not PSR-3.
+     *
+     * @return array
+     */
+    public static function read(string $path): array
     {
-        $directory = realpath(dirname($fname));
+        $directory = realpath(dirname($path));
+
         if (!file_exists($directory) || !is_dir($directory) || !is_readable($directory)) {
-            throw new ErrorException(sprintf('The directory "%s" is not a vaild directory to read log files.', $directory));
+            throw new ErrorException(
+                sprintf(
+                    'The directory "%s" is not a vaild directory to read log files.',
+                    $directory
+                )
+            );
         }
 
         $logs = [];
 
-        $fp = fopen($fname, 'r');
+        $fp = fopen($path, 'r');
         if ($fp) {
-            while (($r = fgets($fp, 10240)) !== false) {
-                // Zend\Log : %timestamp% %priorityName% (%priority%): %message% %extra%
+            while (($r = fgets($fp, 1024)) !== false) {
                 if (preg_match('/^(.+) (DEBUG|INFO|NOTICE|WARN|ERR|CRIT|ALERT|EMERG) \(([0-9])\): (.+) ({.+})$/', $r, $matches) == 1) {
                     $logs[] = [
                         'timestamp'     => strtotime($matches[1]), // ISO 8601
@@ -88,10 +127,9 @@ class Log
                         'message'       => $matches[4],
                         'extra'         => json_decode($matches[5], true),
                     ];
-                }
-                // Other (olg) logs
-                else {
-                    $logs[] = $r;
+                } else {
+                    fclose($fp);
+                    throw new ErrorException('Invalid format (not PSR-3).');
                 }
             }
         }
