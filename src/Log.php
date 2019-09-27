@@ -3,6 +3,7 @@
 namespace Geo6\Zend\Log;
 
 use ErrorException;
+use Jenssegers\Agent\Agent;
 use Zend\Authentication\AuthenticationService;
 use Zend\Log\Logger;
 use Zend\Log\Processor\PsrPlaceholder;
@@ -23,7 +24,7 @@ class Log
 
         // ---------------------------------------------------------------------------------------------
         if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $data['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'].(isset($_SERVER['REMOTE_ADDR']) ? ' ('.$_SERVER['REMOTE_ADDR'].')' : '');
+            $data['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'] . (isset($_SERVER['REMOTE_ADDR']) ? ' (' . $_SERVER['REMOTE_ADDR'] . ')' : '');
         } else {
             $data['_ip'] = (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null);
         }
@@ -32,11 +33,21 @@ class Log
         $data['_referer'] = (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : null);
 
         // ---------------------------------------------------------------------------------------------
-        if (!empty(ini_get('browscap')) && isset($_SERVER['HTTP_USER_AGENT'])) {
-            $gb = get_browser();
-            $data['_browser'] = ($gb->browser != 'Default Browser' ? $gb->platform.' '.$gb->parent : null);
+        $agent = new Agent();
+
+        if ($agent->isRobot()) {
+            $data['_robot'] = $agent->robot();
         } else {
-            $data['_browser'] = null;
+            if ($agent->isPhone()) {
+                $data['_device'] = $agent->device() ?? 'phone';
+            } elseif ($agent->isTablet()) {
+                $data['_device'] = $agent->device() ?? 'tablet';
+            } elseif ($agent->isDesktop()) {
+                $data['_device'] = 'desktop';
+            }
+
+            $data['_platform'] = $agent->platform() . ' ' . $agent->version($agent->platform());
+            $data['_browser'] = $agent->browser() . ' ' . $agent->version($agent->browser());
         }
 
         // ---------------------------------------------------------------------------------------------
@@ -71,12 +82,12 @@ class Log
                 // Zend\Log : %timestamp% %priorityName% (%priority%): %message% %extra%
                 if (preg_match('/^(.+) (DEBUG|INFO|NOTICE|WARN|ERR|CRIT|ALERT|EMERG) \(([0-9])\): (.+) ({.+})$/', $r, $matches) == 1) {
                     $logs[] = [
-            'timestamp'     => strtotime($matches[1]), // ISO 8601
-            'priority_name' => $matches[2],
-            'priority'      => $matches[3],
-            'message'       => $matches[4],
-            'extra'         => json_decode($matches[5], true),
-          ];
+                        'timestamp'     => strtotime($matches[1]), // ISO 8601
+                        'priority_name' => $matches[2],
+                        'priority'      => $matches[3],
+                        'message'       => $matches[4],
+                        'extra'         => json_decode($matches[5], true),
+                    ];
                 }
                 // Other (olg) logs
                 else {
