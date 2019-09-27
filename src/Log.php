@@ -45,7 +45,7 @@ class Log
             $extra['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
 
             if (isset($_SERVER['REMOTE_ADDR'])) {
-                $extra['_ip'] .= ' ('.$_SERVER['REMOTE_ADDR'].')';
+                $extra['_ip'] .= ' (' . $_SERVER['REMOTE_ADDR'] . ')';
             }
         } elseif (isset($_SERVER['REMOTE_ADDR'])) {
             $extra['_ip'] = $_SERVER['REMOTE_ADDR'];
@@ -62,16 +62,18 @@ class Log
         if ($agent->isRobot()) {
             $extra['_robot'] = $agent->robot();
         } else {
+            $device = $agent->device();
+
             if ($agent->isPhone()) {
-                $extra['_device'] = $agent->device() ?? 'phone';
+                $extra['_device'] = $device !== false ? $device : 'phone';
             } elseif ($agent->isTablet()) {
-                $extra['_device'] = $agent->device() ?? 'tablet';
+                $extra['_device'] = $device !== false ? $device : 'tablet';
             } elseif ($agent->isDesktop()) {
                 $extra['_device'] = 'desktop';
             }
 
-            $extra['_platform'] = $agent->platform().' '.$agent->version($agent->platform());
-            $extra['_browser'] = $agent->browser().' '.$agent->version($agent->browser());
+            $extra['_platform'] = $agent->platform() . ' ' . $agent->version($agent->platform());
+            $extra['_browser'] = $agent->browser() . ' ' . $agent->version($agent->browser());
         }
 
         // ---------------------------------------------------------------------------------------------
