@@ -76,11 +76,9 @@ class Log
 
         // ---------------------------------------------------------------------------------------------
         $auth = new AuthenticationService();
-        $login = $auth->getIdentity();
 
-        $extra['_login'] = null;
-        if (isset($_SESSION['uid']) && !empty($_SESSION['uid'])) {
-            $extra['_login'] = $login;
+        if ($auth->hasIdentity()) {
+            $extra['_identity'] = $auth->getIdentity();
         }
 
         // ---------------------------------------------------------------------------------------------
