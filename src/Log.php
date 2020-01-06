@@ -4,10 +4,10 @@ namespace Geo6\Zend\Log;
 
 use ErrorException;
 use Jenssegers\Agent\Agent;
-use Zend\Authentication\AuthenticationService;
-use Zend\Log\Logger;
-use Zend\Log\Processor\PsrPlaceholder;
-use Zend\Log\Writer\Stream;
+use Laminas\Authentication\AuthenticationService;
+use Laminas\Log\Logger;
+use Laminas\Log\Processor\PsrPlaceholder;
+use Laminas\Log\Writer\Stream;
 
 class Log
 {
@@ -45,7 +45,7 @@ class Log
             $extra['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
 
             if (isset($_SERVER['REMOTE_ADDR'])) {
-                $extra['_ip'] .= ' ('.$_SERVER['REMOTE_ADDR'].')';
+                $extra['_ip'] .= ' (' . $_SERVER['REMOTE_ADDR'] . ')';
             }
         } elseif (isset($_SERVER['REMOTE_ADDR'])) {
             $extra['_ip'] = $_SERVER['REMOTE_ADDR'];
@@ -72,8 +72,8 @@ class Log
                 $extra['_device'] = 'desktop';
             }
 
-            $extra['_platform'] = $agent->platform().' '.$agent->version($agent->platform());
-            $extra['_browser'] = $agent->browser().' '.$agent->version($agent->browser());
+            $extra['_platform'] = $agent->platform() . ' ' . $agent->version($agent->platform());
+            $extra['_browser'] = $agent->browser() . ' ' . $agent->version($agent->browser());
         }
 
         // ---------------------------------------------------------------------------------------------
