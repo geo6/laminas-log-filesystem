@@ -29,7 +29,7 @@ class Log
         array $extra = [],
         int $priority = Logger::INFO
     ): void {
-        $directory = realpath(dirname($path));
+        $directory = dirname($path);
 
         if (!file_exists($directory) || !is_dir($directory) || !is_writable($directory)) {
             throw new ErrorException(
