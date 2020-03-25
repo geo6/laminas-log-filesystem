@@ -1,13 +1,13 @@
 <?php
 
-namespace Geo6\Zend\Log;
+namespace Geo6\Laminas\Log;
 
 use ErrorException;
 use Jenssegers\Agent\Agent;
-use Laminas\Authentication\AuthenticationService;
 use Laminas\Log\Logger;
 use Laminas\Log\Processor\PsrPlaceholder;
 use Laminas\Log\Writer\Stream;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Log
 {
@@ -27,7 +27,8 @@ class Log
         string $path,
         string $message,
         array $extra = [],
-        int $priority = Logger::INFO
+        int $priority = Logger::INFO,
+        ?ServerRequestInterface $request = null
     ): void {
         $directory = dirname($path);
 
@@ -44,46 +45,58 @@ class Log
         $message = str_replace(["\r\n", "\r", "\n"], ' ', $message);
 
         // ---------------------------------------------------------------------------------------------
-        if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            $extra['_ip'] = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        if (!is_null($request)) {
+            $server = $request->getServerParams();
 
-            if (isset($_SERVER['REMOTE_ADDR'])) {
-                $extra['_ip'] .= ' ('.$_SERVER['REMOTE_ADDR'].')';
-            }
-        } elseif (isset($_SERVER['REMOTE_ADDR'])) {
-            $extra['_ip'] = $_SERVER['REMOTE_ADDR'];
-        }
+            if (isset($server['HTTP_X_FORWARDED_FOR'])) {
+                $extra['_ip'] = $server['HTTP_X_FORWARDED_FOR'];
 
-        // ---------------------------------------------------------------------------------------------
-        if (isset($_SERVER['HTTP_REFERER'])) {
-            $extra['_referer'] = $_SERVER['HTTP_REFERER'];
-        }
-
-        // ---------------------------------------------------------------------------------------------
-        $agent = new Agent();
-
-        if ($agent->isRobot()) {
-            $extra['_robot'] = $agent->robot();
-        } else {
-            $device = $agent->device();
-
-            if ($agent->isPhone()) {
-                $extra['_device'] = $device !== false ? $device : 'phone';
-            } elseif ($agent->isTablet()) {
-                $extra['_device'] = $device !== false ? $device : 'tablet';
-            } elseif ($agent->isDesktop()) {
-                $extra['_device'] = 'desktop';
+                if (isset($server['REMOTE_ADDR'])) {
+                    $extra['_ip'] .= ' (' . $server['REMOTE_ADDR'] . ')';
+                }
+            } elseif (isset($server['REMOTE_ADDR'])) {
+                $extra['_ip'] = $server['REMOTE_ADDR'];
             }
 
-            $extra['_platform'] = $agent->platform().' '.$agent->version($agent->platform());
-            $extra['_browser'] = $agent->browser().' '.$agent->version($agent->browser());
-        }
+            // ---------------------------------------------------------------------------------------------
+            if (isset($server['HTTP_REFERER'])) {
+                $extra['_referer'] = $server['HTTP_REFERER'];
+            }
 
-        // ---------------------------------------------------------------------------------------------
-        $auth = new AuthenticationService();
+            // -----------------------------------------------------------------------------------------
+            $agent = new Agent(
+                $request->getServerParams(),
+                $request->getHeaderLine('user-agent')
+            );
 
-        if ($auth->hasIdentity()) {
-            $extra['_identity'] = $auth->getIdentity();
+            if ($agent->isRobot()) {
+                $extra['_robot'] = $agent->robot();
+            } else {
+                $device = $agent->device();
+
+                if ($agent->isPhone()) {
+                    $extra['_device'] = $device !== false ? $device : 'phone';
+                } elseif ($agent->isTablet()) {
+                    $extra['_device'] = $device !== false ? $device : 'tablet';
+                } elseif ($agent->isDesktop()) {
+                    $extra['_device'] = 'desktop';
+                }
+
+                $platform = $agent->platform();
+                $browser = $agent->browser();
+
+                $extra['_platform'] = sprintf('%s %s', $platform, $agent->version($platform));
+                $extra['_browser'] = sprintf('%s %s', $browser, $agent->version($browser));
+            }
+
+            // -----------------------------------------------------------------------------------------
+            if (interface_exists('\Mezzio\Authentication\UserInterface')) {
+                $user = $request->getAttribute(\Mezzio\Authentication\UserInterface::class);
+
+                if (!is_null($user)) {
+                    $extra['_identity'] = $user->getIdentity();
+                }
+            }
         }
 
         // ---------------------------------------------------------------------------------------------
