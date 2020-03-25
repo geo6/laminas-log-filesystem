@@ -52,7 +52,7 @@ class Log
                 $extra['_ip'] = $server['HTTP_X_FORWARDED_FOR'];
 
                 if (isset($server['REMOTE_ADDR'])) {
-                    $extra['_ip'] .= ' (' . $server['REMOTE_ADDR'] . ')';
+                    $extra['_ip'] .= ' ('.$server['REMOTE_ADDR'].')';
                 }
             } elseif (isset($server['REMOTE_ADDR'])) {
                 $extra['_ip'] = $server['REMOTE_ADDR'];
