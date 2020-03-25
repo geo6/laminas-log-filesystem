@@ -40,16 +40,16 @@
         },
         {
             "name": "jaybizzle/crawler-detect",
-            "version": "v1.2.90",
+            "version": "v1.2.94",
             "source": {
                 "type": "git",
                 "url": "https://github.com/JayBizzle/Crawler-Detect.git",
-                "reference": "35f963386e6a189697fe4b14dc91fb42b17fda4b"
+                "reference": "fbd4c12741583fb9d8f0bcbf65248a34eed68fc9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/35f963386e6a189697fe4b14dc91fb42b17fda4b",
-                "reference": "35f963386e6a189697fe4b14dc91fb42b17fda4b",
+                "url": "https://api.github.com/repos/JayBizzle/Crawler-Detect/zipball/fbd4c12741583fb9d8f0bcbf65248a34eed68fc9",
+                "reference": "fbd4c12741583fb9d8f0bcbf65248a34eed68fc9",
                 "shasum": ""
             },
             "require": {
@@ -85,7 +85,7 @@
                 "crawlerdetect",
                 "php crawler detect"
             ],
-            "time": "2019-12-08T20:03:27+00:00"
+            "time": "2020-02-20T21:42:59+00:00"
         },
         {
             "name": "jenssegers/agent",
@@ -474,16 +474,16 @@
         },
         {
             "name": "laminas/laminas-session",
-            "version": "2.9.1",
+            "version": "2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-session.git",
-                "reference": "60b5cc844e09627d4f1a2a547e13268f376ccb3d"
+                "reference": "fdba34c1b257235dba2fff6ed4df1844390f85f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/60b5cc844e09627d4f1a2a547e13268f376ccb3d",
-                "reference": "60b5cc844e09627d4f1a2a547e13268f376ccb3d",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/fdba34c1b257235dba2fff6ed4df1844390f85f6",
+                "reference": "fdba34c1b257235dba2fff6ed4df1844390f85f6",
                 "shasum": ""
             },
             "require": {
@@ -505,7 +505,7 @@
                 "laminas/laminas-validator": "^2.6",
                 "mongodb/mongodb": "^1.0.1",
                 "php-mock/php-mock-phpunit": "^1.1.2 || ^2.0",
-                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.16"
+                "phpunit/phpunit": "^5.7.27 || ^6.5.14 || ^7.5.20"
             },
             "suggest": {
                 "laminas/laminas-cache": "Laminas\\Cache component",
@@ -541,7 +541,7 @@
                 "laminas",
                 "session"
             ],
-            "time": "2019-12-31T17:46:59+00:00"
+            "time": "2020-03-06T09:44:45+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",
@@ -595,16 +595,16 @@
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
-            "version": "1.0.0",
+            "version": "1.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-zendframework-bridge.git",
-                "reference": "32d7095e436a31b8d98e485a5c63d70df74915a8"
+                "reference": "0fb9675b84a1666ab45182b6c5b29956921e818d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/32d7095e436a31b8d98e485a5c63d70df74915a8",
-                "reference": "32d7095e436a31b8d98e485a5c63d70df74915a8",
+                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/0fb9675b84a1666ab45182b6c5b29956921e818d",
+                "reference": "0fb9675b84a1666ab45182b6c5b29956921e818d",
                 "shasum": ""
             },
             "require": {
@@ -643,7 +643,7 @@
                 "laminas",
                 "zf"
             ],
-            "time": "2019-12-31T15:24:03+00:00"
+            "time": "2020-01-07T22:58:31+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
@@ -748,16 +748,16 @@
         },
         {
             "name": "psr/log",
-            "version": "1.1.2",
+            "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/php-fig/log.git",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801"
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/php-fig/log/zipball/446d54b4cb6bf489fc9d75f55843658e6f25d801",
-                "reference": "446d54b4cb6bf489fc9d75f55843658e6f25d801",
+                "url": "https://api.github.com/repos/php-fig/log/zipball/0f73288fd15629204f9d42b7055f72dacbe811fc",
+                "reference": "0f73288fd15629204f9d42b7055f72dacbe811fc",
                 "shasum": ""
             },
             "require": {
@@ -791,7 +791,7 @@
                 "psr",
                 "psr-3"
             ],
-            "time": "2019-11-01T11:05:21+00:00"
+            "time": "2020-03-23T09:12:05+00:00"
         }
     ],
     "packages-dev": [],
