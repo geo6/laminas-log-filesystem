@@ -474,16 +474,16 @@
         },
         {
             "name": "laminas/laminas-session",
-            "version": "2.9.2",
+            "version": "2.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-session.git",
-                "reference": "fdba34c1b257235dba2fff6ed4df1844390f85f6"
+                "reference": "519e8966146536cd97c1cc3d59a21b095fb814d7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/fdba34c1b257235dba2fff6ed4df1844390f85f6",
-                "reference": "fdba34c1b257235dba2fff6ed4df1844390f85f6",
+                "url": "https://api.github.com/repos/laminas/laminas-session/zipball/519e8966146536cd97c1cc3d59a21b095fb814d7",
+                "reference": "519e8966146536cd97c1cc3d59a21b095fb814d7",
                 "shasum": ""
             },
             "require": {
@@ -493,7 +493,7 @@
                 "php": "^5.6 || ^7.0"
             },
             "replace": {
-                "zendframework/zend-session": "self.version"
+                "zendframework/zend-session": "^2.9.1"
             },
             "require-dev": {
                 "container-interop/container-interop": "^1.1",
@@ -541,7 +541,7 @@
                 "laminas",
                 "session"
             ],
-            "time": "2020-03-06T09:44:45+00:00"
+            "time": "2020-03-29T13:26:04+00:00"
         },
         {
             "name": "laminas/laminas-stdlib",
@@ -595,16 +595,16 @@
         },
         {
             "name": "laminas/laminas-zendframework-bridge",
-            "version": "1.0.1",
+            "version": "1.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-zendframework-bridge.git",
-                "reference": "0fb9675b84a1666ab45182b6c5b29956921e818d"
+                "reference": "faf68f6109ceeff24241226033ab59640c7eb63b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/0fb9675b84a1666ab45182b6c5b29956921e818d",
-                "reference": "0fb9675b84a1666ab45182b6c5b29956921e818d",
+                "url": "https://api.github.com/repos/laminas/laminas-zendframework-bridge/zipball/faf68f6109ceeff24241226033ab59640c7eb63b",
+                "reference": "faf68f6109ceeff24241226033ab59640c7eb63b",
                 "shasum": ""
             },
             "require": {
@@ -643,7 +643,7 @@
                 "laminas",
                 "zf"
             ],
-            "time": "2020-01-07T22:58:31+00:00"
+            "time": "2020-03-26T16:07:12+00:00"
         },
         {
             "name": "mobiledetect/mobiledetectlib",
